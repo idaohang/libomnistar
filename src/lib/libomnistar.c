@@ -14,13 +14,15 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#include <elrob/serial_easy.h>
-#include <elrob/libgps.h>
-#include <elrob/gps-nmea.h>
+#include <libelrob/Etime.h>
+#include <libelrob/Edebug.h>
+#include <libelrob/Emacros.h>
+
+#include <libelrob/serial.h>
+#include <libelrob/gps.h>
+#include <libelrob/gps-nmea.h>
+
 #include "omnistar.h"
-#include <elrob/Etime.h>
-#include <elrob/Edebug.h>
-#include <elrob/Emacros.h>
 
 /* Constants */
 const char CMD_ASSIG[]    = "ASSIGNOMNI";

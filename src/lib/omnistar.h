@@ -6,12 +6,30 @@
   email                : pierre.lamon@epfl.ch
 
   description          : commands for configuring the omnistar
+                         WARNING! By now the lib only support one port for both configuration
+                         and data acquisition
  ***************************************************************************/
 
-#ifndef LIBOMNISTAR_STUCT_H
-#define LIBOMNISTAR_STUCT_H
+#ifndef LIBOMNISTAR_H
+#define LIBOMNISTAR_H
 
-#include <elrob/libgps_struct.h>
+#include <libelrob/gps.h>
+
+#define OMNI_MAX_BUFF_SIZE 2048
+
+#define OMNI_MIN_FREQ         1525000
+#define OMNI_MAX_FREQ         1560000
+#define OMNI_MAX_CMD_SIZE     1024
+#define OMNI_MSG_START_CHAR   '#'
+#define OMNI_REPLY_BEGIN_CHAR '<'
+#define OMNI_REPLY_END_CHAR   ']'
+#define OMNI_MAX_FIELD_SIZE   32
+#define REPLY_OK_SIZE         5
+#define REPLY_ERROR_SIZE      27
+#define CR                    0x0D
+#define LF                    0x0A
+
+#define OMNI_CHECK_FOUND(fun) if(!(fun)) return 0
 
 typedef enum _OMNI_BAUD_TYPE {OMNI_BAUD_300,
               OMNI_BAUD_600,
@@ -33,13 +51,19 @@ typedef enum _OMNI_SETUP_PORT_TYPE{OMNI_SETUP_PORT_COM1,
               OMNI_SETUP_PORT_THISPORT,
               OMNI_SETUP_PORT_ALL} OMNI_SETUP_PORT_TYPE;
 
-typedef enum _OMNI_PARITY_TYPE {OMNI_PARITY_NO, OMNI_PARITY_EVEN, OMNI_PARITY_ODD} OMNI_PARITY_TYPE;
-typedef enum _OMNI_HANDSHAKE_TYPE {OMNI_HANDSHAKE_NO, OMNI_HANDSHAKE_XON, OMNI_HANDSHAKE_CTS} OMNI_HANDSHAKE_TYPE;
-typedef enum _OMNI_DATABITS_TYPE {OMNI_DATABITS_7 = 7, OMNI_DATABITS_8 = 8} OMNI_DATABITS_TYPE;
-typedef enum _OMNI_STOPBITS_TYPE {OMNI_STOPBITS_1 = 1, OMNI_STOPBITS_2 = 2} OMNI_STOPBITS_TYPE;
+typedef enum _OMNI_PARITY_TYPE {OMNI_PARITY_NO, OMNI_PARITY_EVEN,
+OMNI_PARITY_ODD} OMNI_PARITY_TYPE;
+typedef enum _OMNI_HANDSHAKE_TYPE {OMNI_HANDSHAKE_NO, OMNI_HANDSHAKE_XON,
+OMNI_HANDSHAKE_CTS} OMNI_HANDSHAKE_TYPE;
+typedef enum _OMNI_DATABITS_TYPE {OMNI_DATABITS_7 = 7, OMNI_DATABITS_8 = 8}
+OMNI_DATABITS_TYPE;
+typedef enum _OMNI_STOPBITS_TYPE {OMNI_STOPBITS_1 = 1, OMNI_STOPBITS_2 = 2}
+OMNI_STOPBITS_TYPE;
 typedef enum _OMNI_ONOFF_TYPE {OMNI_OFF,OMNI_ON,OMNI_ONOFF_END} OMNI_ONOFF_TYPE;
 
-typedef enum _OMNI_LOG_NMEA_TYPE {OMNI_LOG_ALM,OMNI_LOG_GGA,OMNI_LOG_GLL,OMNI_LOG_GRS,OMNI_LOG_GSA,OMNI_LOG_GST,OMNI_LOG_GSV,OMNI_LOG_RMC,OMNI_LOG_VTG,OMNI_LOG_ZDA} OMNI_LOG_NMEA_TYPE;
+typedef enum _OMNI_LOG_NMEA_TYPE
+{OMNI_LOG_ALM,OMNI_LOG_GGA,OMNI_LOG_GLL,OMNI_LOG_GRS,OMNI_LOG_GSA,OMNI_LOG_GST,
+OMNI_LOG_GSV,OMNI_LOG_RMC,OMNI_LOG_VTG,OMNI_LOG_ZDA} OMNI_LOG_NMEA_TYPE;
 
 typedef enum _OMNI_MSG_TYPE {OMNI_ALM,OMNI_GGA,
               OMNI_GLL,OMNI_GRS,
@@ -62,12 +86,19 @@ typedef enum _OMNI_TRIGGER_TYPE {OMNI_TRIGGER_ONNEW,
               OMNI_TRIGGER_END} OMNI_TRIGGER_TYPE;
 
 
-typedef enum _OMNI_HOLD_TYPE {OMNI_NOHOLD,OMNI_HOLD,OMNI_HOLD_END} OMNI_HOLD_TYPE;
+typedef enum _OMNI_HOLD_TYPE {OMNI_NOHOLD,OMNI_HOLD,OMNI_HOLD_END}
+OMNI_HOLD_TYPE;
 
-typedef enum _OMNI_SEED_MODE_TYPE {OMNI_SEED_MODE_RESET, OMNI_SEED_MODE_SET, OMNI_SEED_MODE_STORE, OMNI_SEED_MODE_RESTORE, OMNI_SEED_MODE_END} OMNI_SEED_MODE_TYPE;
-typedef enum _OMNI_DATUM_TYPE {OMNI_DATUM_WGS84,OMNI_DATUM_TOTO,OMNI_DATUM_END} OMNI_DATUM_TYPE;
-typedef enum _OMNI_UNDULATION_TYPE {OMNI_UNDULATION_TABLE,OMNI_UNDULATION_USER,OMNI_UNDULATION_OSU89B,OMNI_UNDULATION_EGM96,OMNI_UNDULATION_END} OMNI_UNDULATION_TYPE;
-typedef enum _OMNI_SWITCH_TYPE {OMNI_SWITCH_DISABLE,OMNI_SWITCH_ENABLE,OMNI_SWITCH_END} OMNI_SWITCH_TYPE;
+typedef enum _OMNI_SEED_MODE_TYPE {OMNI_SEED_MODE_RESET, OMNI_SEED_MODE_SET,
+OMNI_SEED_MODE_STORE, OMNI_SEED_MODE_RESTORE, OMNI_SEED_MODE_END}
+OMNI_SEED_MODE_TYPE;
+typedef enum _OMNI_DATUM_TYPE {OMNI_DATUM_WGS84,OMNI_DATUM_TOTO,OMNI_DATUM_END}
+OMNI_DATUM_TYPE;
+typedef enum _OMNI_UNDULATION_TYPE
+{OMNI_UNDULATION_TABLE,OMNI_UNDULATION_USER,OMNI_UNDULATION_OSU89B,
+OMNI_UNDULATION_EGM96,OMNI_UNDULATION_END} OMNI_UNDULATION_TYPE;
+typedef enum _OMNI_SWITCH_TYPE
+{OMNI_SWITCH_DISABLE,OMNI_SWITCH_ENABLE,OMNI_SWITCH_END} OMNI_SWITCH_TYPE;
 typedef enum _OMNI_SOLSTATUS_TYPE {OMNI_SOL_COMPUTED,
               OMNI_INSUFFICIENT_OBS,
               OMNI_NO_CONVERGENCE,
@@ -165,7 +196,8 @@ typedef struct _SeedSetupStruct
   OMNI_UNDULATION_TYPE  undulation;
 } SeedSetupStruct;
 
-/* Maps the OMNIHPPOS message from the 8300 (ignore the header, search for the first occurence of ;) */
+/* Maps the OMNIHPPOS message from the 8300 (ignore the header, search for the
+first occurence of ;) */
 typedef struct _HPPosStruct
 {
   TIMEVAL               meas_time;
@@ -181,7 +213,7 @@ typedef struct _HPPosStruct
   OMNI_SOLSTATUS_TYPE   sol_status;
   /* km, IMPORTANT: the position type of the gps data */
   OMNI_POSITION_TYPE    pos_type;
-  /* km, this is the real data from the sensor 
+  /* km, this is the real data from the sensor
      in th gps coordinates */
   GPS_Struct            coord;
   double                undulation;
@@ -200,5 +232,47 @@ typedef struct _HPPosStruct
   int                   L2;
 } HPPosStruct;
 
+typedef struct _ComStruct {
+  int ttyCom; /* file descriptor */
+  int baud;   /* baud rate */
+}ComStruct;
+
+void PrintRawBuffer(unsigned char *buf, unsigned int size);
+unsigned int ConvToBps(OMNI_BAUD_TYPE baud_type);
+unsigned int Omni_ConvToStdBaud(int omni);
+unsigned long CalculateBlockCRC32(unsigned long ulCount, unsigned char
+*ucBuffer);
+void PrepareHPPOSDumpFormat(char *fmt);
+void PrepareHPPOSReadFormat(char *fmt);
+
+/** Setup the communication with the satellite */
+int  Omni_OpenPort(OMNI_COM_TYPE port, char *device, OMNI_BAUD_TYPE baudrate, int timeout);
+int  Omni_ClosePort(OMNI_COM_TYPE port);
+int  Omni_SetDefaultCmdPort(OMNI_COM_TYPE def_port);
+int  Omni_AssignOmni(unsigned int freq, OMNI_BAUD_TYPE baud);
+void Omni_InitDefaultComSetup(ComSetupStruct *com_str);
+int  Omni_ComSetup(ComSetupStruct com_str);
+int  Omni_LogSetup(LogSetupStruct log_str);
+int  Omni_UnlogMsg(OMNI_SETUP_PORT_TYPE port, OMNI_MSG_TYPE msg);
+int  Omni_UnlogAll(int check_reply);
+int  Omni_EnableHP();
+int  Omni_EnableVBS();
+int  Omni_SaveConfig();
+int  Omni_Reset(unsigned int seconds);
+int  Omni_ParseStream(OMNI_COM_TYPE port, char *rec_buf, size_t buflen, TIMEVAL *stamp);
+int  Omni_ParseOMNIHPPOS(HPPosStruct *hppos, const char *rec_buf, size_t buflen, TIMEVAL stamp, char sep);
+void Omni_DumpHeader(FILE *strm, const char *hostname);
+void Omni_DumpOMNIHPPOS(FILE *strm, HPPosStruct *hppos);
+int  Omni_ReadOMNIHPPOSFromFile(FILE *strm, HPPosStruct *hppos);
+unsigned int Omni_ConvToOmniBaud(int Bbaud);
+void Omni_PrintHPPosStruct(HPPosStruct *hppos);
+void Omni_ClearHPPos(HPPosStruct *hppos);
+int  Omni_SetSeed(SeedSetupStruct seed);
+int  Omni_RestoreSeed();
+int  Omni_StoreSeed();
+int  Omni_ResetSeed();
+int Omni_IsMsgOfType(OMNI_MSG_TYPE msg_type, const char *buff);
+OMNI_MSG_TYPE Omni_GetMsgType(const char *buff);
+TIMEVAL Omni_GetMeasuredTime(TIMEVAL itow_change_time, TIMEVAL gps_avail_time);
 
 #endif

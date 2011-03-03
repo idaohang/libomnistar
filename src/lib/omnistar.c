@@ -12,9 +12,9 @@
 #include <string.h>
 #include <termios.h>
 
+#include <libelrob/Etime.h>
+
 #include "omnistar.h"
-#include "libomnistar_struct.h"
-#include <elrob/Etime.h>
 
 const char OMNI_AXIS_READ_FMT[] = "%lf\t%lf\t%lf\t";
 const char OMNI_AXIS_DUMP_FMT[] = "%.15lf\t%.15lf\t%.4lf\t";
